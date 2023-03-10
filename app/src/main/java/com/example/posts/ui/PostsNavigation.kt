@@ -4,6 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 
 sealed class Screen(val route: String) {
+    object Splash: Screen("splash")
+
     object Home: Screen("home")
     object Detail: Screen("detail?id={id}") {
         fun passId(id: Int): String {

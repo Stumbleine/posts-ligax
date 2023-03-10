@@ -8,6 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.posts.ui.components.Splash
+import com.example.posts.ui.components.SplashScreen
 import com.example.posts.ui.detail.PostDetailScreen
 import com.example.posts.ui.home.HomeScreen
 
@@ -17,13 +19,17 @@ fun PostsNavGraph(
     navigateToHome: () -> Unit,
     navigateToDetail: (Int) -> Unit,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Home.route
+    startDestination: String = Screen.Splash.route
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
+        composable(route = Screen.Splash.route){
+
+            SplashScreen(navController = navController)
+        }
         composable(route = Screen.Home.route) {
             HomeScreen(onItemClicked = { navigateToDetail(it) })
         }
