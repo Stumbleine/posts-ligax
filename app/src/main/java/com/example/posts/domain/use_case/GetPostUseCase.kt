@@ -10,4 +10,5 @@ class GetPostUseCase @Inject constructor(private val repository: PostRepository)
     suspend operator  fun invoke(id:Int):Result<Post>{
         Log.i("useCase",id.toString())
         return repository.getPost(id)
-    }}
+    }
+}

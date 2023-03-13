@@ -14,13 +14,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.posts.data.database.PostEntity
+import com.example.posts.domain.model.FavoritePost
 import com.example.posts.domain.model.Post
+import com.example.posts.ui.home.HomeViewModel
 import com.example.posts.ui.theme.myTheme
 
 @Composable
 fun PostCard(
-    post: Post,
-    onItemClicked: (Int) -> Unit
+    post: FavoritePost,
+    onItemClicked: (Int) -> Unit,
+    viewModel: HomeViewModel
 ) {
     Card(
         modifier = Modifier
@@ -49,25 +52,29 @@ fun PostCard(
                 textAlign = TextAlign.Start
             )
             Row() {
-
-                IconButton(onClick = { /*TODO*/ },
-                    content = {
-                        if (true) {
+                if (post.favorite) {
+                    IconButton(onClick = { viewModel.setFavorite(post.id, false) },
+                        content = {
                             Icon(
                                 Icons.Outlined.Star,
                                 null,
                                 tint =
-                                Color.Yellow
+                                Color.Yellow,
                             )
-                        } else {
+                        }
+                    )
+                } else {
+                    IconButton(
+                        onClick = { viewModel.setFavorite(post.id, true) },
+                        content = {
                             Icon(
                                 Icons.Outlined.Star,
                                 null
                             )
                         }
-                    }
-                )
-                IconButton(onClick = { /*TODO*/ },
+                    )
+                }
+                IconButton(onClick = { viewModel.deletePost(post.id) },
                     content = {
                         Icon(
                             Icons.Filled.Delete,

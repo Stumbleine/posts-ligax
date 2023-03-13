@@ -5,16 +5,16 @@ import com.example.posts.data.source.remote.PostsApi
 import com.example.posts.domain.model.Post
 import com.example.posts.domain.repositories.PostRepository
 import com.example.posts.data.Result
-import com.example.posts.data.database.PostDao
-import com.example.posts.data.database.RoomRepository
-import com.example.posts.data.database.RoomRepositoryImp
+import com.example.posts.data.database.*
 import com.example.posts.data.mapper.toEntity
+import com.example.posts.data.mapper.toFavoritePost
 import com.example.posts.data.mapper.toPostModel
 import com.example.posts.data.source.dto.toComment
 
 import com.example.posts.data.source.dto.toPost
 import com.example.posts.data.source.dto.toUser
 import com.example.posts.domain.model.Comment
+import com.example.posts.domain.model.FavoritePost
 import com.example.posts.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -26,7 +26,7 @@ class PostRepositoryImp @Inject constructor(
     private val api: PostsApi,
     private val roomRepository: RoomRepository
 ) : PostRepository {
-    override fun getPosts(): Flow<Result<List<Post>>> = flow {
+    override fun getPosts(): Flow<Result<List<FavoritePost>>> = flow {
         emit(Result.Loading())
         try {
 
@@ -38,9 +38,9 @@ class PostRepositoryImp @Inject constructor(
                 }
                 localPosts = roomRepository.getPosts()
                 Log.i("localPosts",localPosts.toString())
-                emit(Result.Success(response))
+                emit(Result.Success(localPosts.map { it.toFavoritePost() }))
             }
-            emit(Result.Success(localPosts.map { it.toPostModel() }))
+            emit(Result.Success(localPosts.map { it.toFavoritePost() }))
             // Log.i("response==>", response.toString())
 
         } catch (e: HttpException) {
@@ -96,5 +96,23 @@ class PostRepositoryImp @Inject constructor(
         return Result.Success(response.map { it.toComment() })
     }
 
+    override suspend fun getFavorites():Result<List<FavoritePost>>{
+        val response = try {
+            roomRepository.getFavorites().map { it.toFavoritePost() }}
+        catch (e:Exception){
+            return Result.Error("Algo salio mal")
+        }
+        return Result.Success(response)
+    }
 
+    override suspend fun updatePost(id: Int, favorite: Boolean) {
+        roomRepository.updatePost(id,favorite)
+    }
+
+    override suspend fun deletePost(id: Int) {
+        roomRepository.deletePost(id)
+    }
+    override suspend fun deleteAllPosts() {
+        roomRepository.deleteAll()
+    }
 }

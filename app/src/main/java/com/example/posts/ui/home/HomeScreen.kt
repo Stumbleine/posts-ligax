@@ -21,6 +21,8 @@ import com.example.posts.ui.home.components.PostCard
 import com.example.posts.ui.theme.myTheme
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.posts.domain.model.FavoritePost
 
 @Composable
 fun HomeScreen(
@@ -91,11 +93,7 @@ fun HomeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    scope.launch {
-                        scaffoldState.drawerState.apply {
-                            if (isClosed) open() else close()
-                        }
-                    }
+                    viewModel.deleteAllPost()
                 },
 
                 // containerColor = MaterialTheme.colors.secondary,
@@ -116,7 +114,9 @@ fun HomeScreen(
             isLoading = state.isLoading,
             posts = state.posts,
             tabSelected = tabSelected,
-            setTab = { viewModel.setTab(it) }
+            setTab = { viewModel.setTab(it) },
+            favorites = state.favorites,
+            viewModel = viewModel
         )
     }
 }
@@ -126,9 +126,11 @@ fun HomeContent(
     modifier: Modifier = Modifier,
     onItemClicked: (Int) -> Unit,
     isLoading: Boolean = false,
-    posts: List<Post> = emptyList(),
+    posts: List<FavoritePost> = emptyList(),
+    favorites:List<FavoritePost> = emptyList(),
     tabSelected: Int,
-    setTab: (Int) -> Unit
+    setTab: (Int) -> Unit,
+    viewModel: HomeViewModel
 ) {
     val titles = listOf("ALL", "FAVORITES")
 
@@ -161,7 +163,10 @@ fun HomeContent(
                             //Text(text = posts[index].title)
                             PostCard(
                                 post = posts[index],
-                                onItemClicked = { onItemClicked(it) })
+                                onItemClicked = { onItemClicked(it) },
+                                viewModel=viewModel
+
+                            )
                         }
                     }
 
@@ -174,11 +179,13 @@ fun HomeContent(
                     ),
                     modifier = Modifier.fillMaxSize(),
                     content = {
-                        items(posts.size) { index ->
+                        items(favorites.size) { index ->
                             Text(text = "hello")
                             PostCard(
                                 post = posts[index],
-                                onItemClicked = { onItemClicked(it) })
+                                onItemClicked = { onItemClicked(it) },
+                                viewModel=viewModel
+                            )
                         }
                     }
 

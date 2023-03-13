@@ -3,6 +3,7 @@ package com.example.posts.data.mapper
 import androidx.room.Entity
 import com.example.posts.data.database.PostEntity
 import com.example.posts.data.source.dto.PostsDto
+import com.example.posts.domain.model.FavoritePost
 import com.example.posts.domain.model.Post
 
 fun Post.toEntity():PostEntity{
@@ -11,7 +12,16 @@ fun Post.toEntity():PostEntity{
         title=title,
         body=title,
         userId = userId,
-        favorite = true,
+        favorite = false,
+    )
+}
+fun PostEntity.toFavoritePost():FavoritePost{
+    return FavoritePost(
+        id=id,
+        title=title,
+        body=title,
+        userId = userId,
+        favorite= favorite
     )
 }
 
