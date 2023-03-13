@@ -1,5 +1,7 @@
 package com.example.posts.data
 
+import com.example.posts.data.database.PostEntity
+
 sealed class Result<T>(val data: T? = null, val message: String? = null) {
     class Loading<T>(data: T? = null): Result<T>(data)
     class Success<T>(data: T?): Result<T>(data)

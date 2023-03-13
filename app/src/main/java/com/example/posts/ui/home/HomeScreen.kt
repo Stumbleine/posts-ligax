@@ -1,31 +1,38 @@
 package com.example.posts.ui.home
 
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.posts.data.Result
+import androidx.navigation.NavController
 import com.example.posts.domain.model.Post
-import kotlinx.coroutines.flow.collectLatest
-
+import com.example.posts.ui.components.TopBar
+import com.example.posts.ui.home.components.PostCard
+import com.example.posts.ui.theme.myTheme
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.livedata.observeAsState
 
 @Composable
 fun HomeScreen(
     onItemClicked: (Int) -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
-
+    viewModel: HomeViewModel = hiltViewModel(),
+    navController: NavController,
 ) {
+
     val state = viewModel.state
     val eventFlow = viewModel.eventFlow
     val scaffoldState = rememberScaffoldState()
+    val tabSelected:Int by viewModel.tabSelected.observeAsState(initial = 0)
 /*
     LaunchedEffect(key1 = true ){
         eventFlow.collectLatest { event ->
@@ -40,32 +47,78 @@ fun HomeScreen(
     }
 */
 
+
+    val scope = rememberCoroutineScope()
+
+    fun openMenu() {
+        scope.launch {
+            scaffoldState.drawerState.apply {
+                if (isClosed) open() else close()
+            }
+        }
+    }
     Scaffold(
         scaffoldState = scaffoldState,
+        topBar = {
+            TopBar(
+                title = "Zamoga", navController = navController,
+                openMenu = { openMenu() }
+            )
+        },
+        drawerContent = {
+            Text(
+                "Drawer title",
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.myTheme.textPrimary
+            )
+            Divider()
+            Row(
+                Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
 
-        ) { innerPadding ->
+                ) {
+                Text(text = "Dark mode", color = MaterialTheme.myTheme.textPrimary)
+                Switch(
+                    checked = true, onCheckedChange = {},
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.myTheme.primary,
+                        uncheckedThumbColor = MaterialTheme.myTheme.primaryVariant,
+                    )
+                )
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    scope.launch {
+                        scaffoldState.drawerState.apply {
+                            if (isClosed) open() else close()
+                        }
+                    }
+                },
+
+                // containerColor = MaterialTheme.colors.secondary,
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = MaterialTheme.myTheme.error
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = "Add FAB",
+                    tint = Color.White,
+                )
+            }
+        }
+    ) { innerPadding ->
         HomeContent(
             modifier = Modifier.padding(innerPadding),
             onItemClicked = { onItemClicked(it) },
             isLoading = state.isLoading,
-            posts = state.posts
-
+            posts = state.posts,
+            tabSelected = tabSelected,
+            setTab = { viewModel.setTab(it) }
         )
     }
-
-    /*
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Olvidaste la contraseña?",
-            color = Color.Red
-        )
-    }
-    */
-
 }
 
 @Composable
@@ -73,88 +126,65 @@ fun HomeContent(
     modifier: Modifier = Modifier,
     onItemClicked: (Int) -> Unit,
     isLoading: Boolean = false,
-    posts: List<Post> = emptyList()
+    posts: List<Post> = emptyList(),
+    tabSelected: Int,
+    setTab: (Int) -> Unit
 ) {
+    val titles = listOf("ALL", "FAVORITES")
+
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colors.surface
     ) {
-        LazyColumn(
-            contentPadding = PaddingValues(vertical = 5.dp),
-            modifier = Modifier.fillMaxSize(),
-            content = {
-                items(posts.size) { index ->
-                    Text(text = posts[index].title)
 
+        Column() {
+            TabRow(
+                selectedTabIndex = tabSelected,
+                backgroundColor = MaterialTheme.myTheme.primary
+            ) {
+                titles.forEachIndexed { index, title ->
+                    Tab(
+                        text = { Text(title, color = Color.White) },
+                        selected = tabSelected == index,
+                        onClick = { setTab(index) },
+                        selectedContentColor = Color(0xFF12ea1d),
+                    )
                 }
             }
+            if (tabSelected == 0) {
+                LazyColumn(
+                    contentPadding = PaddingValues(
+                        vertical = 5.dp
+                    ),
+                    modifier = Modifier.fillMaxSize(),
+                    content = {
+                        items(posts.size) { index ->
+                            //Text(text = posts[index].title)
+                            PostCard(
+                                post = posts[index],
+                                onItemClicked = { onItemClicked(it) })
+                        }
+                    }
 
-        )
+                )
+            }
+            if(tabSelected==1){
+                LazyColumn(
+                    contentPadding = PaddingValues(
+                        vertical = 5.dp
+                    ),
+                    modifier = Modifier.fillMaxSize(),
+                    content = {
+                        items(posts.size) { index ->
+                            Text(text = "hello")
+                            PostCard(
+                                post = posts[index],
+                                onItemClicked = { onItemClicked(it) })
+                        }
+                    }
 
+                )
+            }
+        }
     }
 }
 
-
-/*
-public class MainActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin);
-
-        Retrofit retrofit= new Retrofit.Builder()
-            .baseUrl("https://jsonplaceholder.typicode.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-
-        ApiInterface apiInterface= retrofit.create(ApiInterface.class);
-
-        Call<Post> call= apiInterface.getPost();
-
-        call.enqueue(new Callback<Post>() {
-            @Override
-            public void onResponse(Call<Post> call, Response<Post> response) {
-                Log.i("response_title",response.body().getTitle()+"");
-                Log.i("response_userId",response.body().getUserId()+"");
-                Log.i("response_id",response.body().getId()+"");
-                Log.i("response_body",response.body().getBody()+"");
-            }
-
-            @Override
-            public void onFailure(Call<Post> call, Throwable t) {
-            }
-
-        });
-    }
-
-    public interface ApiInterface {
-
-        @GET("Posts/1")
-        Call<Post> getPost();
-    }
-
-    public class Post {
-
-        private int id;
-        private int userId;
-        private String title;
-        private String body;
-
-        public int getId() {
-            return id;
-        }
-
-        public int getUserId() {
-            return userId;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getBody() {
-            return body;
-        }
-    }
-
- */

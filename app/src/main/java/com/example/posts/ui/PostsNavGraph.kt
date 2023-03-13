@@ -27,11 +27,10 @@ fun PostsNavGraph(
         modifier = modifier
     ) {
         composable(route = Screen.Splash.route){
-
             SplashScreen(navController = navController)
         }
         composable(route = Screen.Home.route) {
-            HomeScreen(onItemClicked = { navigateToDetail(it) })
+            HomeScreen(onItemClicked = { navigateToDetail(it) },navController = navController)
         }
         composable(
             route = Screen.Detail.route,
@@ -39,7 +38,7 @@ fun PostsNavGraph(
                 navArgument("id") { type = NavType.IntType }
             )
         ) {
-            PostDetailScreen()
+            PostDetailScreen(navController=navController)
         }
     }
 }
