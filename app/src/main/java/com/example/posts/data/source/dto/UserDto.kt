@@ -12,6 +12,7 @@ data class UserDto(
     val username: String,
     val website: String
 )
+
 fun UserDto.toUser(): User {
     return User(
         id = id,

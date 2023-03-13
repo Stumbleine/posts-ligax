@@ -26,10 +26,10 @@ class PostRepositoryImp @Inject constructor(
     private val api: PostsApi,
     private val roomRepository: RoomRepository
 ) : PostRepository {
+
     override fun getPosts(): Flow<Result<List<FavoritePost>>> = flow {
         emit(Result.Loading())
         try {
-
             var localPosts = roomRepository.getPosts();
             if (localPosts.isEmpty()) {
                 val response = api.getPosts()
@@ -37,12 +37,10 @@ class PostRepositoryImp @Inject constructor(
                     roomRepository.insertPost(it.toEntity())
                 }
                 localPosts = roomRepository.getPosts()
-                Log.i("localPosts",localPosts.toString())
+                Log.i("localPosts", localPosts.toString())
                 emit(Result.Success(localPosts.map { it.toFavoritePost() }))
             }
             emit(Result.Success(localPosts.map { it.toFavoritePost() }))
-            // Log.i("response==>", response.toString())
-
         } catch (e: HttpException) {
             emit(
                 Result.Error(
@@ -62,17 +60,16 @@ class PostRepositoryImp @Inject constructor(
     }
 
     override suspend fun getPost(id: Int): Result<Post> {
-        Log.i("getPöstRepository",id.toString())
+        Log.i("getPöstRepository", id.toString())
         val response = try {
-
             api.getPost(id)
         } catch (e: Exception) {
-            Log.i("POST","quien sabe que paso")
+            Log.i("POST", "quien sabe que paso")
 
             return Result.Error("Algo salio mal")
 
         }
-        Log.i("POST",response.toString())
+        Log.i("POST", response.toString())
         return Result.Success(response.toPost())
     }
 
@@ -82,7 +79,7 @@ class PostRepositoryImp @Inject constructor(
         } catch (e: Exception) {
             return Result.Error("Algo salio mal")
         }
-        Log.i("POST",response.toString())
+        Log.i("POST", response.toString())
         return Result.Success(response.toUser())
     }
 
@@ -92,26 +89,27 @@ class PostRepositoryImp @Inject constructor(
         } catch (e: Exception) {
             return Result.Error("Algo salio mal")
         }
-        Log.i("POST",response.toString())
+        Log.i("POST", response.toString())
         return Result.Success(response.map { it.toComment() })
     }
 
-    override suspend fun getFavorites():Result<List<FavoritePost>>{
+    override suspend fun getFavorites(): Result<List<FavoritePost>> {
         val response = try {
-            roomRepository.getFavorites().map { it.toFavoritePost() }}
-        catch (e:Exception){
+            roomRepository.getFavorites().map { it.toFavoritePost() }
+        } catch (e: Exception) {
             return Result.Error("Algo salio mal")
         }
         return Result.Success(response)
     }
 
     override suspend fun updatePost(id: Int, favorite: Boolean) {
-        roomRepository.updatePost(id,favorite)
+        roomRepository.updatePost(id, favorite)
     }
 
     override suspend fun deletePost(id: Int) {
         roomRepository.deletePost(id)
     }
+
     override suspend fun deleteAllPosts() {
         roomRepository.deleteAll()
     }

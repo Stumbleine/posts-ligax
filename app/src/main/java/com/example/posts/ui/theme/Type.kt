@@ -15,7 +15,6 @@ private val Poppins = FontFamily(
     Font(R.font.poppins_bold,FontWeight.Bold),
 )
 
-
 val PoppinsTypography = Typography(
     body1 = TextStyle(
         fontFamily =  Poppins,

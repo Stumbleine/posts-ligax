@@ -23,7 +23,4 @@ object DbModule {
     fun getPostDatabase (@ApplicationContext context: Context): PostDatabase{
         return PostDatabase.getPostDatabase(context)
     }
-
-
 }
-

@@ -4,10 +4,10 @@ import com.example.posts.domain.model.User
 import com.example.posts.domain.repositories.PostRepository
 import javax.inject.Inject
 
-class GetUserUseCase@Inject constructor(
+class GetUserUseCase @Inject constructor(
     private val repository: PostRepository
-)  {
-    suspend operator fun invoke(userId:Int):com.example.posts.data.Result<User>{
+) {
+    suspend operator fun invoke(userId: Int): com.example.posts.data.Result<User> {
         return repository.getUser(userId)
     }
 }

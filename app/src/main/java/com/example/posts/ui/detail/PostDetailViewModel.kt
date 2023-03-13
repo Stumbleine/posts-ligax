@@ -19,18 +19,19 @@ import kotlinx.coroutines.launch
 class PostDetailViewModel @Inject constructor(
     private val getPostUseCase: GetPostUseCase,
     private val getUserUseCase: GetUserUseCase,
-    private  val getCommentsUseCase: getCommentsUseCase,
+    private val getCommentsUseCase: getCommentsUseCase,
     private val savedStateHandle: SavedStateHandle
-):ViewModel(){
+) : ViewModel() {
 
+    var state by mutableStateOf(DetailState())
+        private set
 
-     var state by mutableStateOf(DetailState())
-         private set
     init {
-        Log.i("init","ingresa a init")
+        Log.i("init", "ingresa a init")
         getPost()
         getComments()
     }
+
     private fun getPost() {
         savedStateHandle.get<Int>("id")?.let { postId ->
             viewModelScope.launch {
@@ -58,14 +59,15 @@ class PostDetailViewModel @Inject constructor(
             }
         }
     }
-    private fun getComments(){
+
+    private fun getComments() {
         savedStateHandle.get<Int>("id")?.let { postId ->
             viewModelScope.launch {
                 getCommentsUseCase(postId).also { result ->
                     when (result) {
                         is Result.Success -> {
                             state = state.copy(
-                                comments = result.data?: emptyList(),
+                                comments = result.data ?: emptyList(),
                                 isLoading = false
                             )
                         }
@@ -84,29 +86,29 @@ class PostDetailViewModel @Inject constructor(
             }
         }
     }
-    private fun getUser(userId:Int){
-            viewModelScope.launch {
-                getUserUseCase(userId).also { result ->
-                    when (result) {
-                        is Result.Success -> {
-                            state = state.copy(
-                                user = result.data,
-                                isLoading = false
-                            )
-                        }
-                        is Result.Error -> {
-                            state = state.copy(
-                                isLoading = false
-                            )
-                        }
-                        is Result.Loading -> {
-                            state = state.copy(
-                                isLoading = true
-                            )
-                        }
+
+    private fun getUser(userId: Int) {
+        viewModelScope.launch {
+            getUserUseCase(userId).also { result ->
+                when (result) {
+                    is Result.Success -> {
+                        state = state.copy(
+                            user = result.data,
+                            isLoading = false
+                        )
+                    }
+                    is Result.Error -> {
+                        state = state.copy(
+                            isLoading = false
+                        )
+                    }
+                    is Result.Loading -> {
+                        state = state.copy(
+                            isLoading = true
+                        )
                     }
                 }
             }
+        }
     }
-
 }

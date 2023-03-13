@@ -4,7 +4,6 @@ import com.example.posts.data.source.dto.Address
 import com.example.posts.data.source.dto.Company
 import com.example.posts.data.source.dto.PostItem
 
-
 data class User (
     val address: Address,
     val company: Company,
@@ -15,4 +14,3 @@ data class User (
     val username: String,
     val website: String
 )
-

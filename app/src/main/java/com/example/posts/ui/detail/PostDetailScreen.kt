@@ -16,20 +16,18 @@ fun PostDetailScreen(
     navController: NavController
 ) {
     val state = viewModel.state
-
     Scaffold(
         topBar = {
             TopBar(title = "", navController = navController, { openMenu() })
         }
     ) {
         PostDetailCard(
-            post=state.post,
-            user=state.user,
-            comments=state.comments
+            post = state.post,
+            user = state.user,
+            comments = state.comments
         )
     }
-
 }
 
-fun openMenu(){
+fun openMenu() {
 }

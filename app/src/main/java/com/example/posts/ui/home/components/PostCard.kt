@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,9 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.posts.data.database.PostEntity
 import com.example.posts.domain.model.FavoritePost
-import com.example.posts.domain.model.Post
 import com.example.posts.ui.home.HomeViewModel
 import com.example.posts.ui.theme.myTheme
 
@@ -84,8 +81,6 @@ fun PostCard(
                     }
                 )
             }
-
-
         }
     }
 }

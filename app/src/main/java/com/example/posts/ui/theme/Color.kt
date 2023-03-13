@@ -9,7 +9,6 @@ val Teal200 = Color(0xFF03DAC5)
 val Green = Color(0xFF52CE5C)
 val Green100 = Color(0xFFA0D995)
 
-//val BgLight = Color(0xFFFAFAFA)
 val BgLight = Color(0xFFF5F5F5)
 val White = Color(0xFFFFFFFF)
 val BgDark = Color(0xFF0D1117)

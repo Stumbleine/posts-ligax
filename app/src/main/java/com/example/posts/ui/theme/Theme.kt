@@ -73,9 +73,6 @@ fun PostsTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable 
     } else {
         LightColorPalette
     }
-
-
-
     CompositionLocalProvider(LocalColors provides colors) {
         MaterialTheme(
             colors = colors.material,

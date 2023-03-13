@@ -1,7 +1,6 @@
 package com.example.posts.data.source.dto
 
 import com.example.posts.domain.model.Comment
-import com.example.posts.domain.model.User
 
 data class CommentDto(
     val body: String,

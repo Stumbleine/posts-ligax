@@ -6,7 +6,6 @@ import com.example.posts.data.source.dto.Address
 import com.example.posts.data.source.dto.Company
 
 @Entity
-
 class UserEntity(
     val id: Int,
     @PrimaryKey

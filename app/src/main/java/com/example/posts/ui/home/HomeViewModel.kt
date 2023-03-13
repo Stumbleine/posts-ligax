@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor(
     private val getPostsUseCase: GetPostsUseCase,
     private val getFavoritesUseCase: GetFavoritesUseCase,
     private val updatePostUseCase: UpdatePostUseCase,
-    private  val deletePostUseCase: DeletePostUseCase,
+    private val deletePostUseCase: DeletePostUseCase,
     private val deleteAllPostsUseCase: DeleteAllPostsUseCase
 ) : ViewModel() {
 
@@ -35,16 +35,20 @@ class HomeViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
     private val _tabSelected = MutableLiveData<Int>()
     val tabSelected: LiveData<Int> = _tabSelected
-    fun setTab (index:Int){
+
+    fun setTab(index: Int) {
         _tabSelected.value = index
     }
-    fun getTab (): Int? {
+
+    fun getTab(): Int? {
         return _tabSelected.value
     }
+
     init {
         getPosts()
         getFavorites()
     }
+
     fun getPosts() {
         viewModelScope.launch {
             getPostsUseCase().onEach { result ->
@@ -59,9 +63,11 @@ class HomeViewModel @Inject constructor(
                         state = state.copy(
                             isLoading = false
                         )
-                        _eventFlow.emit(UIEvent.ShowSnackBar(
-                            result.message ?: "Unknown error"
-                        ))
+                        _eventFlow.emit(
+                            UIEvent.ShowSnackBar(
+                                result.message ?: "Unknown error"
+                            )
+                        )
                     }
                     is Result.Loading -> {
                         state = state.copy(
@@ -72,13 +78,13 @@ class HomeViewModel @Inject constructor(
             }.launchIn(this)
         }
     }
-    fun getFavorites(){
 
+    fun getFavorites() {
         viewModelScope.launch {
-            getFavoritesUseCase().also { result->
-                when (result){
-                    is Result.Success->{
-                        Log.i("getFavorites->",result.data.toString())
+            getFavoritesUseCase().also { result ->
+                when (result) {
+                    is Result.Success -> {
+                        Log.i("getFavorites->", result.data.toString())
                         state = state.copy(
                             favorites = result.data ?: emptyList(),
                             isLoading = false
@@ -88,9 +94,11 @@ class HomeViewModel @Inject constructor(
                         state = state.copy(
                             isLoading = false
                         )
-                        _eventFlow.emit(UIEvent.ShowSnackBar(
-                            result.message ?: "Unknown error"
-                        ))
+                        _eventFlow.emit(
+                            UIEvent.ShowSnackBar(
+                                result.message ?: "Unknown error"
+                            )
+                        )
                     }
                     is Result.Loading -> {
                         state = state.copy(
@@ -102,34 +110,32 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun setFavorite(id:Int, favorite:Boolean){
-        Log.i("setFavorite>bool",favorite.toString())
-        Log.i("setFavorite>id",id.toString())
+    fun setFavorite(id: Int, favorite: Boolean) {
         viewModelScope.launch {
-        updatePostUseCase(id,favorite)
-
+            updatePostUseCase(id, favorite)
+            getPosts()
+            getFavorites()
         }
-        getPosts()
-        getFavorites()
-        Log.i("newFavorites",state.favorites.toString())
     }
 
-    fun deletePost(id:Int){
-        Log.i("deletePost>id",id.toString())
+    fun deletePost(id: Int) {
+        Log.i("deletePost>id", id.toString())
         viewModelScope.launch {
             deletePostUseCase(id)
+            getPosts()
+            getFavorites()
         }
-        getPosts()
-        getFavorites()
     }
-    fun deleteAllPost(){
-        Log.i("deleteAll>id","deleteAll")
-        viewModelScope.launch {
+
+    fun deleteAllPost() {
+        Log.i("deleteAll>id", "deleteAll")
+        viewModelScope.launch() {
             deleteAllPostsUseCase()
+            getPosts()
+            getFavorites()
         }
-        getPosts()
-        getFavorites()
     }
+
     sealed class UIEvent {
         data class ShowSnackBar(val message: String) : UIEvent()
     }

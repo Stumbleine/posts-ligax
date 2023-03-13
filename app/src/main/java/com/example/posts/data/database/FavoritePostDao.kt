@@ -15,6 +15,4 @@ interface FavoritePostDao {
 
     @Query("DELETE FROM FavoritePostEntity  WHERE id = :id")
     suspend fun  deleteFavorite(id:Int)
-
-
 }

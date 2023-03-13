@@ -2,7 +2,6 @@ package com.example.posts.data.source.remote
 
 import com.example.posts.data.source.dto.CommentDto
 import com.example.posts.data.source.dto.PostItem
-import com.example.posts.data.source.dto.PostsDto
 import com.example.posts.data.source.dto.UserDto
 import com.example.posts.domain.model.Post
 import retrofit2.http.GET

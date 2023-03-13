@@ -1,5 +1,4 @@
 package com.example.posts.di
-import android.util.Log
 import com.example.posts.data.source.remote.PostsApi
 import com.example.posts.util.BASE_URL
 import dagger.Module

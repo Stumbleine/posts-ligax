@@ -2,7 +2,6 @@ package com.example.posts.ui.home
 
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -11,18 +10,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.posts.domain.model.Post
 import com.example.posts.ui.components.TopBar
-import com.example.posts.ui.home.components.PostCard
-import com.example.posts.ui.theme.myTheme
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.posts.domain.model.FavoritePost
+import com.example.posts.ui.home.components.HomeContent
+import com.example.posts.ui.theme.myTheme
 
 @Composable
 fun HomeScreen(
@@ -32,24 +27,8 @@ fun HomeScreen(
 ) {
 
     val state = viewModel.state
-    val eventFlow = viewModel.eventFlow
     val scaffoldState = rememberScaffoldState()
-    val tabSelected:Int by viewModel.tabSelected.observeAsState(initial = 0)
-/*
-    LaunchedEffect(key1 = true ){
-        eventFlow.collectLatest { event ->
-            when (event){
-                is HomeViewModel.UIEvent.showSnackBar ->{
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        message = event.message
-                    )
-                }
-            }
-        }
-    }
-*/
-
-
+    val tabSelected: Int by viewModel.tabSelected.observeAsState(initial = 0)
     val scope = rememberCoroutineScope()
 
     fun openMenu() {
@@ -59,17 +38,18 @@ fun HomeScreen(
             }
         }
     }
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             TopBar(
-                title = "Zamoga", navController = navController,
+                title = "Zemoga", navController = navController,
                 openMenu = { openMenu() }
             )
         },
         drawerContent = {
             Text(
-                "Drawer title",
+                "ZemogaApp",
                 modifier = Modifier.padding(16.dp),
                 color = MaterialTheme.myTheme.textPrimary
             )
@@ -95,10 +75,8 @@ fun HomeScreen(
                 onClick = {
                     viewModel.deleteAllPost()
                 },
-
-                // containerColor = MaterialTheme.colors.secondary,
                 shape = RoundedCornerShape(16.dp),
-                backgroundColor = MaterialTheme.myTheme.error
+                backgroundColor =MaterialTheme.myTheme.error
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Delete,
@@ -111,7 +89,6 @@ fun HomeScreen(
         HomeContent(
             modifier = Modifier.padding(innerPadding),
             onItemClicked = { onItemClicked(it) },
-            isLoading = state.isLoading,
             posts = state.posts,
             tabSelected = tabSelected,
             setTab = { viewModel.setTab(it) },
@@ -120,78 +97,3 @@ fun HomeScreen(
         )
     }
 }
-
-@Composable
-fun HomeContent(
-    modifier: Modifier = Modifier,
-    onItemClicked: (Int) -> Unit,
-    isLoading: Boolean = false,
-    posts: List<FavoritePost> = emptyList(),
-    favorites:List<FavoritePost> = emptyList(),
-    tabSelected: Int,
-    setTab: (Int) -> Unit,
-    viewModel: HomeViewModel
-) {
-    val titles = listOf("ALL", "FAVORITES")
-
-    Surface(
-        modifier = modifier.fillMaxSize(),
-    ) {
-
-        Column() {
-            TabRow(
-                selectedTabIndex = tabSelected,
-                backgroundColor = MaterialTheme.myTheme.primary
-            ) {
-                titles.forEachIndexed { index, title ->
-                    Tab(
-                        text = { Text(title, color = Color.White) },
-                        selected = tabSelected == index,
-                        onClick = { setTab(index) },
-                        selectedContentColor = Color(0xFF12ea1d),
-                    )
-                }
-            }
-            if (tabSelected == 0) {
-                LazyColumn(
-                    contentPadding = PaddingValues(
-                        vertical = 5.dp
-                    ),
-                    modifier = Modifier.fillMaxSize(),
-                    content = {
-                        items(posts.size) { index ->
-                            //Text(text = posts[index].title)
-                            PostCard(
-                                post = posts[index],
-                                onItemClicked = { onItemClicked(it) },
-                                viewModel=viewModel
-
-                            )
-                        }
-                    }
-
-                )
-            }
-            if(tabSelected==1){
-                LazyColumn(
-                    contentPadding = PaddingValues(
-                        vertical = 5.dp
-                    ),
-                    modifier = Modifier.fillMaxSize(),
-                    content = {
-                        items(favorites.size) { index ->
-                            Text(text = "hello")
-                            PostCard(
-                                post = posts[index],
-                                onItemClicked = { onItemClicked(it) },
-                                viewModel=viewModel
-                            )
-                        }
-                    }
-
-                )
-            }
-        }
-    }
-}
-

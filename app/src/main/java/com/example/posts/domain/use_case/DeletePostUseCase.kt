@@ -4,5 +4,6 @@ import com.example.posts.domain.repositories.PostRepository
 import javax.inject.Inject
 
 class DeletePostUseCase @Inject constructor(private val repository: PostRepository) {
-    suspend operator fun invoke(id:Int) {}
+
+    suspend operator fun invoke(id: Int) {}
 }
